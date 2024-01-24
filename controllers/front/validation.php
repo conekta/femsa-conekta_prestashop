@@ -41,7 +41,7 @@ class ConektaValidationModuleFrontController extends ModuleFrontController
         $cart = $this->context->cart;
         $authorized = false;
         $customer = new Customer($cart->id_customer);
-        $conekta = new Conekta();
+        $conekta = new OxxoPay();
 
         foreach (Module::getPaymentModules() as $module) {
             if ($module['name'] == 'conekta') {
@@ -55,7 +55,7 @@ class ConektaValidationModuleFrontController extends ModuleFrontController
             print_r($this->getTranslator()->trans(
                 'This payment method is not available.',
                 [],
-                'Modules.Conekta.Shop'
+                'Modules.DigitalFemsa.Shop'
             ));
         } else {
             if (!Validate::isLoadedObject($customer)) {
@@ -74,7 +74,7 @@ class ConektaValidationModuleFrontController extends ModuleFrontController
                     'amount' => pSQL(Tools::getValue('conektAmount')),
                     'status' => pSQL(Tools::getValue('charge_status')),
                     'currency' => pSQL(Tools::getValue('charge_currency')),
-                    'livemode' => Configuration::get('CONEKTA_MODE'),
+                    'livemode' => Configuration::get('FEMSA_DIGITAL_MODE'),
                     'payment_method' => (object) [
                         'type' => pSQL(Tools::getValue('payment_type')),
                         'reference' => pSQL(Tools::getValue('reference')),

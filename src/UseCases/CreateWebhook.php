@@ -18,24 +18,24 @@
  * @see       https://conekta.com/
  */
 
-namespace Conekta\Payments\UseCases;
+namespace DigitalFemsa\Payments\UseCases;
 
 require_once __DIR__ . '/../../lib/conekta-php/lib/Conekta.php';
 
-use Conekta\Conekta;
-use Conekta\Webhook;
+use DigitalFemsa\Conekta;
+use DigitalFemsa\Webhook;
 use Configuration;
 use Tools;
 
 class CreateWebhook
 {
-    public const webhookSetting = 'CONEKTA_WEBHOOK';
+    public const webhookSetting = 'FEMSA_DIGITAL_WEBHOOK';
 
-    public const webhookFailedUrlSetting = 'CONEKTA_WEBHOOK_FAILED_URL';
+    public const webhookFailedUrlSetting = 'FEMSA_DIGITAL_WEBHOOK_FAILED_URL';
 
-    public const webhookErrorSetting = 'CONEKTA_WEBHOOK_ERROR_MESSAGE';
+    public const webhookErrorSetting = 'FEMSA_DIGITAL_WEBHOOK_ERROR_MESSAGE';
 
-    public const webhookAttemptsSetting = 'CONEKTA_WEBHOOK_FAILED_ATTEMPTS';
+    public const webhookAttemptsSetting = 'FEMSA_DIGITAL_WEBHOOK_FAILED_ATTEMPTS';
 
     public const MaxFailedAttempts = 5;
 

@@ -17,16 +17,12 @@
  *
  * @see       https://conekta.com/
  */
-require_once dirname(__FILE__) . '/../../model/Database.php';
+require_once dirname(__FILE__) . '/../../model/DigitalFemsaDatabase.php';
 class ConektaNotificationModuleFrontController extends ModuleFrontController
 {
     public const ORDER_CANCELED = 6;
 
     public const ORDER_REFUNDED = 7;
-
-    public const ORDER_PENDING_PAYMENT = 20;
-
-    public $auth = false;
 
     public $ajax;
 
@@ -138,15 +134,10 @@ class ConektaNotificationModuleFrontController extends ModuleFrontController
      *
      * @return void
      */
-    private function orderPendingPayment($orderID, $conektaOrder)
+    private function orderPendingPayment($orderID)
     {
         // by default is cash_payment
         $current_state =  (int) Configuration::get('waiting_cash_payment');
-
-        // checks if payment method is spei and override config state
-        if (isset($conektaOrder['charges']['data'][0]['payment_method']['object']) && $conektaOrder['charges']['data'][0]['payment_method']['object'] === 'bank_transfer_payment') {
-            $current_state =  (int) Configuration::get('waiting_spei_payment');
-        }
 
         Db::getInstance()->Execute(
             'UPDATE ' . _DB_PREFIX_
@@ -177,11 +168,11 @@ class ConektaNotificationModuleFrontController extends ModuleFrontController
      */
     private function planDeleted($conektaPlan)
     {
-        $result = Database::getProductIdProductData($conektaPlan->id);
+        $result = DigitalFemsaDatabase::getProductIdProductData($conektaPlan->id);
 
         foreach ($result as $product) {
-            Database::updateConektaProductData($product['id_product'], 'is_subscription', 'false');
-            Database::updateConektaProductData($product['id_product'], 'subscription_plan', '');
+            DigitalFemsaDatabase::updateConektaProductData($product['id_product'], 'is_subscription', 'false');
+            DigitalFemsaDatabase::updateConektaProductData($product['id_product'], 'subscription_plan', '');
         }
     }
 
@@ -193,7 +184,7 @@ class ConektaNotificationModuleFrontController extends ModuleFrontController
     private function getOrderID($conektaOrder)
     {
         $referenceID = (string) $conektaOrder->metadata->reference_id;
-        $result = Database::getOrderByReferenceId($referenceID);
+        $result = DigitalFemsaDatabase::getOrderByReferenceId($referenceID);
 
         return $result['id_order'];
     }
@@ -221,9 +212,9 @@ class ConektaNotificationModuleFrontController extends ModuleFrontController
      */
     private function authenticateEvent($body, $digest)
     {
-        $privateKeyString = Configuration::get('CONEKTA_MODE') ?
-            Configuration::get('CONEKTA_PRIVATE_KEY_LIVE') :
-            Configuration::get('CONEKTA_PRIVATE_KEY_TEST');
+        $privateKeyString = Configuration::get('FEMSA_DIGITAL_MODE') ?
+            Configuration::get('FEMSA_DIGITAL_PRIVATE_KEY_LIVE') :
+            Configuration::get('FEMSA_DIGITAL_PRIVATE_KEY_TEST');
 
         if (!empty($privateKeyString) && !empty($body)) {
             if (!empty($digest)) {
